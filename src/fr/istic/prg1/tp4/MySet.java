@@ -46,6 +46,7 @@ public class MySet extends List<SubSet> {
 	/**
 	 * Supprimer de this toutes les valeurs saisies par l'utilisateur et afficher le nouveau
 	 * contenu (arrêt par lecture de -1)
+	 * @pre l'utilisateur saisit des entiers
 	 */
 	public void remove() {
 		
@@ -66,9 +67,12 @@ public class MySet extends List<SubSet> {
 			}
 			
 			// Nouveau contenu
-			System.out.println( "Nouveau contenu : ");
+			System.out.println( "Le nouveau contenu est le suivant : ");
 			
+			// Retour sur le drapeau pour la nouvelle valeur
+			it.restart();
 			x = sc.nextInt();
+			
 		}
 		
 	}
@@ -89,8 +93,14 @@ public class MySet extends List<SubSet> {
 				it.getValue().set.union(it2.getValue().set);
 				it.goForward();
 				it2.goForward();
+			} else if (it.getValue().rank < it2.getValue().rank) {
+				it.goForward();
 			}
-			
+			else {
+				// it2.getValue().rank < it.getValue().rank
+				it.addLeft(it2.getValue().clone());
+				it2.goForward();				
+			}
 			
 			
 		}
