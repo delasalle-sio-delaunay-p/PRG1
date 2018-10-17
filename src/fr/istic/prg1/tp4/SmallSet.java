@@ -31,7 +31,8 @@ public class SmallSet {
 		int count = 0;
 		
 		for (int i = 0; i <= 255; ++i) {
-			if (this.tab[i]) { ++count; }
+			if (this.tab[i]) 
+			{ ++count; }
 		}
 		
 		return count;
@@ -45,12 +46,10 @@ public class SmallSet {
 	 */
 	public boolean contains (int x) {
 		
-		if ((x >= 0) && (x < 256)) {
-			return this.tab[x];
-		}
-		else {
+		if (tab[x]==true)
+			return true;
+		else 
 			return false;
-		}
 		
 	}
 	
@@ -59,11 +58,15 @@ public class SmallSet {
 	 */
 	public boolean isEmpty () {
 		
-		for (int i = 0; i <= 255; ++i) {
-			if (this.tab[i]) { return false; }
+		int i=0;
+		while (tab[i]==false && i<256)
+		{
+			++i;
 		}
-		
-		return true;	
+		if (i<256)
+			return false;
+		else 
+			return true;	
 	}
 	
 	/**
@@ -86,7 +89,7 @@ public class SmallSet {
 	 */
 	public void remove (int x) {
 		
-		if ((x >= 0) && (x < 256)) {
+		if (contains(x)==true) {
 			this.tab[x] = false;
 		}	
 	}
@@ -156,7 +159,7 @@ public class SmallSet {
 		
 		for (int i = 0; i <= 255; ++i) {
 			
-			if ( (set2.tab[i] == this.tab[i]) ) {
+			if ( (set2.tab[i]==true) ) {
 				 this.tab[i] = false;
 			}		
 		}		
@@ -168,12 +171,25 @@ public class SmallSet {
 	 */
 	public void symmetricDifference (SmallSet set2) {
 		
+		/*
+		for (int i = 0; i <256/2; ++i) {
+			int j= (255/2)+1+i;
+			if (set2.tab[j]==true) 
+			  this.tab[i]=false; 	
+		}
+		*/
+
+		
 		for (int i = 0; i <= 255; ++i) {
 			
-			if ( (set2.tab[i] == this.tab[i]) ) {
+			if ( set2.tab[i]== this.tab[i]  ) {
 				 this.tab[i] = false;
-			}		
-		}		
+			}
+			else {
+				this.tab[i] = true;
+			}
+		}
+		
 	}
 	
 	/**
@@ -182,8 +198,10 @@ public class SmallSet {
 	public void complement () {
 		
 		for (int i = 0; i <= 255; ++i) {
-			if(this.tab[i]) { this.tab[i] = false; }
-			else { this.tab[i] = true; }
+			if(this.tab[i]) 
+			    this.tab[i] = false; 
+			else 
+				this.tab[i] = true; 
 		}			
 	}
 	
@@ -205,9 +223,8 @@ public class SmallSet {
 	public boolean isIncludedIn (SmallSet set2) {
 		
 		for (int i = 0; i <= 255; ++i) {
-			if( ! (this.tab[i] == set2.tab[i]) ) {
+			if (tab[i]==true && tab[i]!=set2.tab[i])
 				return false;
-			}
 		}
 		
 		return true;
@@ -233,23 +250,17 @@ public class SmallSet {
 	@Override
 	public boolean equals (Object set2) {
 		
-		if (!(set2 instanceof SmallSet)) {
+		if (set2==null)
 			return false;
-		}
-		else if (this == set2) {
+		else if (!(set2 instanceof SmallSet)) 
+			return false;
+		else if (isIncludedIn((SmallSet)set2))
+			return false;
+		else if (this == set2) 
+			return true;
+		else
 			return true;
 		}
-		else {
-			SmallSet ss = (SmallSet) set2;
-			for (int i = 0; i < 256; i++) {
-				if (tab[i] != ss.contains(i))
-					return false;
-			}
-
-			return true;
-		}
-		
-	}
 	
 	@Override
 	public String toString () {
