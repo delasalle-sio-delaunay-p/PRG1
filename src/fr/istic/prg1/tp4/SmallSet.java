@@ -171,15 +171,6 @@ public class SmallSet {
 	 */
 	public void symmetricDifference (SmallSet set2) {
 		
-		/*
-		for (int i = 0; i <256/2; ++i) {
-			int j= (255/2)+1+i;
-			if (set2.tab[j]==true) 
-			  this.tab[i]=false; 	
-		}
-		*/
-
-		
 		for (int i = 0; i <= 255; ++i) {
 			
 			if ( set2.tab[i]== this.tab[i]  ) {
