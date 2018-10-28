@@ -1,4 +1,4 @@
-package fr.istic.prg1.tp4;
+package fr.istic.prg1.list;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,7 +14,7 @@ import fr.istic.prg1.list_util.List;
 import fr.istic.prg1.list_util.SmallSet;
 
 /**
- * @author Mickaï¿½l Foursov <foursov@univ-rennes1.fr>
+ * @author Mickaël Foursov <foursov@univ-rennes1.fr>
  * @version 5.0
  * @since 2018-10-02
  */
@@ -22,16 +22,16 @@ import fr.istic.prg1.list_util.SmallSet;
 public class MySet extends List<SubSet> {
 
 	/**
-	 * Borne supï¿½rieure pour les rangs des sous-ensembles.
+	 * Borne supérieure pour les rangs des sous-ensembles.
 	 */
 	private static final int MAX_RANG = 128;
 	/**
-	 * Sous-ensemble de rang maximal ï¿½ mettre dans le drapeau de la liste.
+	 * Sous-ensemble de rang maximal à mettre dans le drapeau de la liste.
 	 */
 	private static final SubSet FLAG_VALUE = new SubSet(MAX_RANG,
 			new SmallSet());
 	/**
-	 * Entrï¿½e standard.
+	 * Entrée standard.
 	 */
 	private static final Scanner standardInput = new Scanner(System.in);
 
@@ -41,7 +41,7 @@ public class MySet extends List<SubSet> {
 	}
 
 	/**
-	 * Fermer tout (actuellement juste l'entrï¿½e standard).
+	 * Fermer tout (actuellement juste l'entrée standard).
 	 */
 	public static void closeAll() {
 		standardInput.close();
@@ -58,8 +58,8 @@ public class MySet extends List<SubSet> {
 	}
 
 	/**
-	 * Afficher ï¿½ l'ï¿½cran les entiers appartenant ï¿½ this, dix entiers par ligne
-	 * d'ï¿½cran.
+	 * Afficher à l'écran les entiers appartenant à this, dix entiers par ligne
+	 * d'écran.
 	 */
 	public void print() {
 		System.out.println(" [version corrigee de contenu]");
@@ -72,8 +72,8 @@ public class MySet extends List<SubSet> {
 	// //////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * Ajouter Ã  this toutes les valeurs saisies par l'utilisateur et afficher
-	 * le nouveau contenu (arrÃªt par lecture de -1).
+	 * Ajouter à this toutes les valeurs saisies par l'utilisateur et afficher
+	 * le nouveau contenu (arrêt par lecture de -1).
 	 */
 	public void add() {
 		System.out.println(" valeurs a ajouter (-1 pour finir) : ");
@@ -83,54 +83,68 @@ public class MySet extends List<SubSet> {
 	}
 
 	/**
-	 * Ajouter Ã  this toutes les valeurs prises dans is.
+	 * Ajouter à this toutes les valeurs prises dans is.
 	 * C'est une fonction auxiliaire pour add() et restore().
 	 * 
 	 * @param is
-	 *            flux d'entrÃ©e.
-	 */
+	 *            flux d'entrée.
+	 */	
 	public void add(InputStream is) {
 		
-	int x = readValue(standardInput, 0);
-		
-	while (x != -1) {
-			
-		this.addNumber(x);
-		readValue(standardInput, 0);
-	}			
-
-			
+        Scanner sc = new Scanner(is);   
+        int value = sc.nextInt();
+        
+        while (value != -1) {
+            addNumber(value);
+            value = sc.nextInt();
+        }	
 	}
-
+	
 	/**
-	 * Ajouter value ï¿½ this.
+	 * Ajouter value à this.
 	 * 
 	 * @param value
-	 *            valuer ï¿½ ajouter.
+	 *            valuer à ajouter.
 	 */
 	public void addNumber(int value) {
-		
-		/*
-		Iterator<SubSet> it = this.iterator();
-		int x = readValue(standardInput, 0);
-				
-			if (!this.contains(x)) {
 			
-				while ((!it.isOnFlag()) && (it.getValue().rank < (x/256)))  {
-					
-					it.goForward();	
-	
-				}
-				
-				it.getValue().set.add(x);
-				
-			}
-		*/
-	}
+		Iterator<SubSet> it = this.iterator();
+			
+		while ((!it.isOnFlag()) && (it.getValue().rank < (value/256))) {
+			it.goForward();
+		}
 
+		
+		if (!it.isOnFlag()) {
+			
+			if (it.getValue().rank == (value/256)) {
+				it.getValue().set.add(value%256);
+			}
+
+			
+			else {
+				
+				SubSet toAdd = new SubSet((value/256), new SmallSet());
+				toAdd.set.add(value%256);
+				it.addLeft(toAdd);
+			}
+		}
+
+		else {
+
+			SubSet toAdd = new SubSet((value/256), new SmallSet());
+			toAdd.set.add(value%256);
+			it.addRight(toAdd);
+		}
+
+		it.restart();		
+		
+	}
+	
+	
 	/**
 	 * Supprimer de this toutes les valeurs saisies par l'utilisateur et
-	 * afficher le nouveau contenu (arrï¿½t par lecture de -1).
+	 * afficher le nouveau contenu (arrêt par lecture de -1).
 	 */
 	public void remove() {
 		System.out.println("  valeurs a supprimer (-1 pour finir) : ");
@@ -143,44 +157,37 @@ public class MySet extends List<SubSet> {
 	 * Supprimer de this toutes les valeurs prises dans is.
 	 * 
 	 * @param is
-	 *            flux d'entrÃ©e
+	 *            flux d'entrée
 	 */
-	public void remove(InputStream is){
-		/*
-
-		int x = readValue(standardInput, 0);
-	
-		while (x != -1) {
-			
-			this.removeNumber(x);
-			readValue(standardInput, 0);
-		}
-		*/		
+	public void remove(InputStream is) {
+		
+        Scanner sc = new Scanner(is);   
+        int value = sc.nextInt();
+        
+        while (value != -1) {
+            removeNumber(value);
+            value = sc.nextInt();
+        }	
 	}
 
 	/**
 	 * Supprimer value de this.
 	 * 
 	 * @param value
-	 *            valeur Ã  supprimer
+	 *            valeur à supprimer
 	 */
 	public void removeNumber(int value) {
-	
+		
 		Iterator<SubSet> it = this.iterator();
-	
-			while ((!it.isOnFlag()) && (it.getValue().rank < (value/256))) {
-				it.goForward();
-			}
+		
+		while ((!it.isOnFlag()) && (it.getValue().rank < (value/256))) {
+			it.goForward();
+		}
 
-			if (it.getValue().rank == (value/256)) {
-				
-				it.getValue().set.remove(value%256);
-			}
-
-			// Retour sur le drapeau pour la nouvelle valeur
-			it.restart();
-			
-			
+		//If the correct rank, remove the element
+		if (it.getValue().rank == (value/256)) {
+			it.getValue().set.remove(value%256);
+		}	
 		
 	}
 
@@ -188,48 +195,53 @@ public class MySet extends List<SubSet> {
 	 * @return taille de l'ensemble this
 	 */
 	public int size() {
-		System.out.println();
-		System.out.println("-------------------------------------------------");
-		System.out.println("Fonction ï¿½ ï¿½crire");
-		System.out.println("-------------------------------------------------");
-		System.out.println();
-		return 0;
+		
+        Iterator<SubSet> it = this.iterator();
+        int size = 0;
+        
+        while (!it.isOnFlag()) {
+            size = size + it.getValue().set.size();
+            it.goForward();
+        }
+        
+        return size;
 	}
 
 
 	/**
-	 * @return true si le nombre saisi par l'utilisateur appartient ï¿½ this,
+	 * @return true si le nombre saisi par l'utilisateur appartient à this,
 	 *         false sinon
 	 */
 	public boolean contains() {
-		
 		System.out.println(" valeur cherchee : ");
 		int value = readValue(standardInput, 0);
 		return this.contains(value);
-		
 	}
 
 	/**
 	 * @param value
-	 *            valeur Ã  tester
-	 * @return true si valeur appartient Ã  l'ensemble, false sinon
+	 *            valeur à tester
+	 * @return true si valeur appartient à l'ensemble, false sinon
 	 */
 
 	public boolean contains(int value) {
-				
-		Iterator<SubSet> it = this.iterator();
-					
-		while ( !it.isOnFlag() && it.getValue().rank < (value/256) ) {
-			it.goForward();
-		}
-					
-		if (it.getValue().rank == (value/256)) {
-						
-			return it.getValue().set.contains(value%256);
-		}
-				
-		return false;		
 		
+		//Only if the int has a correct value
+		if ((value <= 32767) && (value >= 0)) {
+			Iterator<SubSet> it = this.iterator();
+
+			//Go to the SubSet
+			while ((!it.isOnFlag()) && (it.getValue().rank < (value/256))) {
+				it.goForward();
+			}
+
+			//If the correct rank and after if the element is contained
+			if (it.getValue().rank == (value/256)) {
+				return it.getValue().set.contains(value%256);
+			}
+		}
+
+		return false;
 	}
 
 	// /////////////////////////////////////////////////////////////////////////////
@@ -237,75 +249,43 @@ public class MySet extends List<SubSet> {
 	// /////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * This devient la diffï¿½rence de this et set2.
+	 * This devient la différence de this et set2.
 	 * 
 	 * @param set2
-	 *            deuxiï¿½me ensemble
+	 *            deuxième ensemble
 	 */
 	public void difference(MySet set2) {
-		// Ã  Ã©crire
+		// to do
 	}
 
 	/**
-	 * This devient la diffï¿½rence symï¿½trique de this et set2.
+	 * This devient la différence symétrique de this et set2.
 	 * 
 	 * @param set2
-	 *            deuxiï¿½me ensemble
+	 *            deuxième ensemble
 	 */
 	public void symmetricDifference(MySet set2) {
-		System.out.println();
-		System.out.println("-------------------------------------------------");
-		System.out.println("Fonction ï¿½ ï¿½crire");
-		System.out.println("-------------------------------------------------");
-		System.out.println();
+		// to do
 	}
 
 	/**
 	 * This devient l'intersection de this et set2.
 	 * 
 	 * @param set2
-	 *            deuxiï¿½me ensemble
+	 *            deuxième ensemble
 	 */
 	public void intersection(MySet set2) {
-		System.out.println();
-		System.out.println("-------------------------------------------------");
-		System.out.println("Fonction ï¿½ ï¿½crire");
-		System.out.println("-------------------------------------------------");
-		System.out.println();
+		// to do
 	}
 
 	/**
 	 * This devient l'union de this et set2.
 	 * 
 	 * @param set2
-	 *            deuxiï¿½me ensemble
+	 *            deuxième ensemble
 	 */
 	public void union(MySet set2) {
-	
-		Iterator<SubSet> it = this.iterator();
-		Iterator<SubSet> it2 = set2.iterator();
-		
-		while (!it2.isOnFlag()) {
-			
-			if (it.getValue().rank == it2.getValue().rank) {
-				
-				it.getValue().set.union(it2.getValue().set);
-				it.goForward();
-				it2.goForward();
-				
-			} else if (it.getValue().rank < it2.getValue().rank) {
-				it.goForward();
-			}
-			else {
-				// it2.getValue().rank < it.getValue().rank
-				
-				it.addLeft(it2.getValue().clone());
-				it2.goForward();				
-			}
-			
-			
-		}		
-		
+		// to do
 	}
 
 	// /////////////////////////////////////////////////////////////////////////////
@@ -314,9 +294,9 @@ public class MySet extends List<SubSet> {
 
 	/**
 	 * @param o
-	 *            deuxiï¿½me ensemble
+	 *            deuxième ensemble
 	 * 
-	 * @return true si les ensembles this et o sont ï¿½gaux, false sinon
+	 * @return true si les ensembles this et o sont égaux, false sinon
 	 */
 	@Override
 	public boolean equals(Object o) {
@@ -331,7 +311,7 @@ public class MySet extends List<SubSet> {
 			System.out.println();
 			System.out
 					.println("-------------------------------------------------");
-			System.out.println("Dernier cas ï¿½ ï¿½crire");
+			System.out.println("Dernier cas à écrire");
 			System.out
 					.println("-------------------------------------------------");
 			System.out.println();
@@ -342,15 +322,11 @@ public class MySet extends List<SubSet> {
 
 	/**
 	 * @param set2
-	 *            deuxiï¿½me ensemble
+	 *            deuxième ensemble
 	 * @return true si this est inclus dans set2, false sinon
 	 */
 	public boolean isIncludedIn(MySet set2) {
-		System.out.println();
-		System.out.println("-------------------------------------------------");
-		System.out.println("Fonction ï¿½ ï¿½crire");
-		System.out.println("-------------------------------------------------");
-		System.out.println();
+		// to do
 		return false;
 	}
 
@@ -359,7 +335,7 @@ public class MySet extends List<SubSet> {
 	// /////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * Afficher les rangs prï¿½sents dans this.
+	 * Afficher les rangs présents dans this.
 	 */
 	public void printRanks() {
 		System.out.println(" [version corrigee de rangs]");
@@ -385,8 +361,8 @@ public class MySet extends List<SubSet> {
 	}
 
 	/**
-	 * Crï¿½er this ï¿½ partir d'un fichier choisi par l'utilisateur contenant une
-	 * sï¿½quence d'entiers positifs terminï¿½e par -1 (cf f0.ens, f1.ens, f2.ens,
+	 * Créer this à partir d'un fichier choisi par l'utilisateur contenant une
+	 * séquence d'entiers positifs terminée par -1 (cf f0.ens, f1.ens, f2.ens,
 	 * f3.ens et f4.ens).
 	 */
 	public void restore() {
@@ -410,7 +386,7 @@ public class MySet extends List<SubSet> {
 	}
 
 	/**
-	 * Sauvegarder this dans un fichier d'entiers positifs terminï¿½ par -1.
+	 * Sauvegarder this dans un fichier d'entiers positifs terminé par -1.
 	 */
 	public void save() {
 		System.out.println(" [version corrigee de sauvegarde]");
@@ -430,7 +406,7 @@ public class MySet extends List<SubSet> {
 	}
 
 	/**
-	 * @return l'ensemble this sous forme de chaï¿½ne de caractï¿½res.
+	 * @return l'ensemble this sous forme de chaîne de caractères.
 	 */
 	@Override
 	public String toString() {
@@ -481,7 +457,7 @@ public class MySet extends List<SubSet> {
 	}
 
 	/**
-	 * Afficher l'ensemble avec sa taille et les rangs prï¿½sents.
+	 * Afficher l'ensemble avec sa taille et les rangs présents.
 	 */
 	private void printNewState() {
 		this.print(System.out);

@@ -1,4 +1,4 @@
-package fr.istic.prg1.tp4;
+package fr.istic.prg1.list;
 
 import java.awt.Font;
 import java.awt.Button;

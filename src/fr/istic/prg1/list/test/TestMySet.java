@@ -1,4 +1,4 @@
-package fr.istic.prg1.tp4.test;
+package fr.istic.prg1.list.test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,8 +7,8 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import fr.istic.prg1.tp4.MySet;
-import fr.istic.prg1.tp4.SubSet;
+import fr.istic.prg1.list.MySet;
+import fr.istic.prg1.list.SubSet;
 import fr.istic.prg1.list_util.Iterator;
 import fr.istic.prg1.list_util.SmallSet;
 

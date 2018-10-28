@@ -1,4 +1,4 @@
-package fr.istic.prg1.tp4.test;
+package fr.istic.prg1.list.test;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
