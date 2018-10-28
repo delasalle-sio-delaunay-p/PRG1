@@ -91,12 +91,12 @@ public class MySet extends List<SubSet> {
 	 */	
 	public void add(InputStream is) {
 		
-        Scanner sc = new Scanner(is);   
-        int value = sc.nextInt();
+        Scanner sc = new Scanner(is);
+        int value = readValue(sc, -1);
         
         while (value != -1) {
-            addNumber(value);
-            value = sc.nextInt();
+            this.addNumber(value);
+            value = readValue(sc, -1);
         }	
 	}
 	
@@ -108,36 +108,20 @@ public class MySet extends List<SubSet> {
 	 */
 	public void addNumber(int value) {
 			
-		Iterator<SubSet> it = this.iterator();
-			
-		while ((!it.isOnFlag()) && (it.getValue().rank < (value/256))) {
-			it.goForward();
-		}
-
-		
-		if (!it.isOnFlag()) {
-			
-			if (it.getValue().rank == (value/256)) {
-				it.getValue().set.add(value%256);
-			}
-
-			
-			else {
-				
-				SubSet toAdd = new SubSet((value/256), new SmallSet());
-				toAdd.set.add(value%256);
-				it.addLeft(toAdd);
-			}
-		}
-
-		else {
-
-			SubSet toAdd = new SubSet((value/256), new SmallSet());
-			toAdd.set.add(value%256);
-			it.addRight(toAdd);
-		}
-
-		it.restart();		
+        int rank = value / 256;
+        Iterator<SubSet> it = iterator();
+        
+        while (!it.isOnFlag() && rank > it.getValue().rank) {
+        	it.goForward();
+        }
+           
+        if (rank == it.getValue().rank) {
+            it.getValue().set.add(value % 256);
+        } else {
+            SubSet newSet = new SubSet(rank, new SmallSet());
+            newSet.set.add(value % 256);
+            it.addLeft(newSet);
+        }	
 		
 	}
 	
@@ -161,13 +145,13 @@ public class MySet extends List<SubSet> {
 	 */
 	public void remove(InputStream is) {
 		
-        Scanner sc = new Scanner(is);   
-        int value = sc.nextInt();
+        Scanner sc = new Scanner(is);
+        int value = readValue(sc, -1);
         
         while (value != -1) {
-            removeNumber(value);
-            value = sc.nextInt();
-        }	
+            this.removeNumber(value);
+            value = readValue(sc, -1);
+        }
 	}
 
 	/**
@@ -178,16 +162,19 @@ public class MySet extends List<SubSet> {
 	 */
 	public void removeNumber(int value) {
 		
-		Iterator<SubSet> it = this.iterator();
-		
-		while ((!it.isOnFlag()) && (it.getValue().rank < (value/256))) {
-			it.goForward();
-		}
-
-		//If the correct rank, remove the element
-		if (it.getValue().rank == (value/256)) {
-			it.getValue().set.remove(value%256);
-		}	
+        int rank = value / 256;
+        Iterator<SubSet> it = iterator();
+        
+        while (!it.isOnFlag() && rank > it.getValue().rank) {
+        	it.goForward();
+        }
+            
+        SubSet cur = it.getValue();
+        if (rank == cur.rank) {
+            cur.set.remove(value % 256);
+            if (cur.set.isEmpty())
+                it.remove();
+        }	
 		
 	}
 
@@ -226,21 +213,17 @@ public class MySet extends List<SubSet> {
 
 	public boolean contains(int value) {
 		
-		//Only if the int has a correct value
-		if ((value <= 32767) && (value >= 0)) {
-			Iterator<SubSet> it = this.iterator();
+        int rank = value / 256;
+        Iterator<SubSet> it = iterator();
 
-			//Go to the SubSet
-			while ((!it.isOnFlag()) && (it.getValue().rank < (value/256))) {
-				it.goForward();
-			}
-
-			//If the correct rank and after if the element is contained
-			if (it.getValue().rank == (value/256)) {
-				return it.getValue().set.contains(value%256);
-			}
+		while ((!it.isOnFlag()) && (it.getValue().rank < rank)) {
+			it.goForward();
 		}
 
+		if (it.getValue().rank == rank) {
+			return it.getValue().set.contains(value%256);
+		}
+		
 		return false;
 	}
 
@@ -289,7 +272,7 @@ public class MySet extends List<SubSet> {
 	}
 
 	// /////////////////////////////////////////////////////////////////////////////
-	// /////////////////// Egalitï¿½, Inclusion ////////////////////
+	// /////////////////// Egalité, Inclusion ////////////////////
 	// /////////////////////////////////////////////////////////////////////////////
 
 	/**
