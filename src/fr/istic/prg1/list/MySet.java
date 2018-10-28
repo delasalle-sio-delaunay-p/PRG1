@@ -258,7 +258,36 @@ public class MySet extends List<SubSet> {
 	 *            deuxième ensemble
 	 */
 	public void intersection(MySet set2) {
-		// to do
+		
+		Iterator<SubSet> it1 = this.iterator();
+		Iterator<SubSet> it2 = set2.iterator();
+
+		while (!it1.isOnFlag()) {
+			
+			SubSet cur = it1.getValue();
+			SubSet cur2 = it2.getValue();
+				
+			if (cur.rank == cur2.rank) {
+				
+				cur.set.intersection(cur2.set);
+				
+				if (cur.set.isEmpty()) {
+					it1.remove();
+				}
+				else {
+					it1.goForward();
+				}
+				
+			}
+			
+			if (cur.rank < cur2.rank) {
+				it1.remove();
+			}
+			else {
+				it2.goForward();
+			}
+
+		}
 	}
 
 	/**
@@ -268,7 +297,25 @@ public class MySet extends List<SubSet> {
 	 *            deuxième ensemble
 	 */
 	public void union(MySet set2) {
-		// to do
+		
+		Iterator<SubSet> it1 = this.iterator();
+		Iterator<SubSet> it2 = set2.iterator();
+
+		while (!it2.isOnFlag()) {
+			
+			if (it1.getValue().rank == it2.getValue().rank) {
+				it1.getValue().set.union(it2.getValue().set);
+				it1.goForward();
+				it2.goForward();
+			}
+			else if (it2.getValue().rank < it1.getValue().rank) {
+				it1.addLeft(it2.getValue().clone());
+				it2.goForward();
+			}
+			else {
+				it1.goForward();
+			}
+		}
 	}
 
 	// /////////////////////////////////////////////////////////////////////////////
@@ -291,13 +338,15 @@ public class MySet extends List<SubSet> {
 		} else if (!(o instanceof MySet)) {
 			b = false;
 		} else {
-			System.out.println();
-			System.out
-					.println("-------------------------------------------------");
-			System.out.println("Dernier cas à écrire");
-			System.out
-					.println("-------------------------------------------------");
-			System.out.println();
+			// to do
+			
+			MySet other = (MySet) o;
+			Iterator<SubSet> itO = other.iterator();
+			Iterator<SubSet> it = this.iterator();
+			
+			while (!it.isOnFlag() && !itO.isOnFlag()) {
+				
+			}
 
 		}
 		return b;
