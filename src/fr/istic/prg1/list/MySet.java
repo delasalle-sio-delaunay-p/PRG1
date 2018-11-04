@@ -346,8 +346,21 @@ public class MySet extends List<SubSet> {
 			
 			while (!it.isOnFlag() && !itO.isOnFlag()) {
 				
+                if (it.getValue().rank != itO.getValue().rank) {
+                	b = false;
+                }
+                    
+                if (!it.getValue().set.equals(itO.getValue().set)) {
+                	b = false;
+                }
+                    
+                it.goForward();
+                itO.goForward();				
 			}
-
+			
+            if (!it.isOnFlag() || !itO.isOnFlag()) {
+            	b = false;
+            }
 		}
 		return b;
 	}
