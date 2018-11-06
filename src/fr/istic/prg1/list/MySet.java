@@ -284,8 +284,7 @@ public class MySet extends List<SubSet> {
 	 *            deuxième ensemble
 	 */
 	public void symmetricDifference(MySet set2) {
-		// to do
-		
+
 		// Dans le cas où set2 est identique à this
         if (set2.equals(this)) {
             clear();
@@ -412,7 +411,6 @@ public class MySet extends List<SubSet> {
 		} else if (!(o instanceof MySet)) {
 			b = false;
 		} else {
-			// to do
 			
 			MySet other = (MySet) o;
 			Iterator<SubSet> itO = other.iterator();
@@ -445,29 +443,25 @@ public class MySet extends List<SubSet> {
 	 * @return true si this est inclus dans set2, false sinon
 	 */
 	public boolean isIncludedIn(MySet set2) {
-		// to do
 		
         Iterator<SubSet> it1 = iterator();
         Iterator<SubSet> it2 = set2.iterator();
         
         while (!it1.isOnFlag() && !it2.isOnFlag()) {
-            SubSet cur = it1.getValue();
-            SubSet cur2 = it2.getValue();
-            
-            while (cur.rank > cur2.rank) {
+        			
+            while (it1.getValue().rank > it2.getValue().rank) {
                 it2.goForward();
             }
             
-            if (!cur.set.isIncludedIn(cur2.set)) {
-            	return false;
+            if (it1.getValue().rank < it2.getValue().rank) {
+                return false;
             }
             
-            if (cur.rank < cur2.rank) {
-            	return false;
+            if (!it1.getValue().set.isIncludedIn(it2.getValue().set)) {
+                return false;
             }
             
-            it1.goForward();
-                
+            it1.goForward();         
         }
         
 		return true;
