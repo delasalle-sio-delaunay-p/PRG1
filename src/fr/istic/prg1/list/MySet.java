@@ -238,7 +238,43 @@ public class MySet extends List<SubSet> {
 	 *            deuxième ensemble
 	 */
 	public void difference(MySet set2) {
-		// to do
+		
+		// Dans le cas où set2 est identique à this
+        if (set2.equals(this)) {
+            clear();
+            return;
+        }
+        
+		Iterator<SubSet> it1 = this.iterator();
+		Iterator<SubSet> it2 = set2.iterator();
+
+		while (!it1.isOnFlag()) {
+			
+			SubSet cur = it1.getValue();
+			SubSet cur2 = it2.getValue();
+				
+			if (cur.rank == cur2.rank) {
+				
+				cur.set.difference(cur2.set);
+
+                if (cur.set.isEmpty()) {
+                	it1.remove();
+                }
+                else {
+                	it1.goForward();
+                }
+				
+			}
+			
+            if (cur.rank < cur2.rank) {
+                it1.goForward();
+            }
+            else {
+                it2.goForward();
+            }
+
+		}
+		
 	}
 
 	/**
@@ -249,6 +285,44 @@ public class MySet extends List<SubSet> {
 	 */
 	public void symmetricDifference(MySet set2) {
 		// to do
+		
+		// Dans le cas où set2 est identique à this
+        if (set2.equals(this)) {
+            clear();
+            return;
+        }
+        
+		Iterator<SubSet> it1 = this.iterator();
+		Iterator<SubSet> it2 = set2.iterator();
+		
+		while (!it1.isOnFlag() || !it2.isOnFlag()) {
+			
+			SubSet cur = it1.getValue();
+			SubSet cur2 = it2.getValue();
+				
+			if (cur.rank == cur2.rank) {
+				
+				cur.set.symmetricDifference(cur2.set);
+
+                if (cur.set.isEmpty()) {
+                	it1.remove();
+                }
+                else {
+                	it1.goForward();
+                }
+				
+			}
+			
+            if (cur.rank > cur2.rank) {
+                it1.addLeft(cur2.clone());
+            }
+            if (cur.rank < cur2.rank) {
+            	it1.goForward();
+            }
+            else {
+            	it2.goForward();
+            }
+		}
 	}
 
 	/**
@@ -372,7 +446,31 @@ public class MySet extends List<SubSet> {
 	 */
 	public boolean isIncludedIn(MySet set2) {
 		// to do
-		return false;
+		
+        Iterator<SubSet> it1 = iterator();
+        Iterator<SubSet> it2 = set2.iterator();
+        
+        while (!it1.isOnFlag() && !it2.isOnFlag()) {
+            SubSet cur = it1.getValue();
+            SubSet cur2 = it2.getValue();
+            
+            while (cur.rank > cur2.rank) {
+                it2.goForward();
+            }
+            
+            if (!cur.set.isIncludedIn(cur2.set)) {
+            	return false;
+            }
+            
+            if (cur.rank < cur2.rank) {
+            	return false;
+            }
+            
+            it1.goForward();
+                
+        }
+        
+		return true;
 	}
 
 	// /////////////////////////////////////////////////////////////////////////////
