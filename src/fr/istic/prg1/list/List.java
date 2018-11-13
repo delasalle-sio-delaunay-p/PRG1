@@ -25,24 +25,41 @@ public class List<T extends SuperT> {
 			left = null;
 			right = null;
 		}
+		
+		public Element(T val) { 
+			value = val; 
+			left = null; 
+			right = null; 
+		}
+		
 	} // class Element
 
 	public class ListIterator implements Iterator<T> {
 		private Element current;
 
-		private ListIterator() { }
+		private ListIterator() { 
+			current = flag.right;
+		}
 
 		@Override
-		public void goForward() { }
+		public void goForward() { 
+			
+		}
 
 		@Override
-		public void goBackward() { }
+		public void goBackward() { 
+			
+		}
 
 		@Override
-		public void restart() { }
+		public void restart() {
+			current = flag.right;
+		}
 
 		@Override
-	        public boolean isOnFlag() { return false; }
+	    public boolean isOnFlag() { 
+			return current == flag; 
+		}
 
 		@Override
 		public void remove() {
@@ -55,19 +72,25 @@ public class List<T extends SuperT> {
 		}
 
 		@Override		 
-		public T getValue() { return null; }
+		public T getValue() { return current.value; }
 
 		@Override
-	        public T nextValue() { return null; }
+	        public T nextValue() { goForward(); return current.value;  }
 
 		@Override
-		public void addLeft(T v) { }
+		public void addLeft(T v) { 
+			// to do
+		}
 
 		@Override
-		public void addRight(T v) {}
+		public void addRight(T v) {
+			// to do
+		}
 
 		@Override
-		public void setValue(T v) { }
+		public void setValue(T v) { 
+			current.value = v; 
+		}
 
 		@Override
 		public String toString() {
@@ -78,19 +101,35 @@ public class List<T extends SuperT> {
 
 	private Element flag;
 
-	public List() { }
+	public List() { 	
+		flag = null; 
+	}
 
-	public ListIterator iterator() { return null; }
+	public ListIterator iterator() { 
+		return new ListIterator(); 
+	}
 
-	public boolean isEmpty() { return false; }
+	public boolean isEmpty() { 
+		return flag.right == flag && flag.left == flag; 
+	}
 
-	public void clear() { }
+	public void clear() {  
+		setFlag(flag.value); 
+	}
 
-	public void setFlag(T v) { }
+	public void setFlag(T v) {
+        flag = new Element(v);
+        flag.left = flag;
+        flag.right = flag;
+	}
 
-	public void addHead(T v) { }
+	public void addHead(T v) { 
+		
+	}
 
-	public void addTail(T v) { }
+	public void addTail(T v) { 
+		
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<T> clone() {
