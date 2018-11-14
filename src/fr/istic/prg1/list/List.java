@@ -1,16 +1,7 @@
 package fr.istic.prg1.list;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Scanner;
-
 import fr.istic.prg1.list_util.SuperT;
 import fr.istic.prg1.list_util.Iterator;
-import fr.istic.prg1.list_util.SmallSet;
 
 public class List<T extends SuperT> {
 	// liste en double chainage par references
@@ -43,12 +34,12 @@ public class List<T extends SuperT> {
 
 		@Override
 		public void goForward() { 
-			
+			current = current.right;
 		}
 
 		@Override
 		public void goBackward() { 
-			
+			current = current.left;
 		}
 
 		@Override
@@ -65,6 +56,12 @@ public class List<T extends SuperT> {
 		public void remove() {
 			try {
 				assert current != flag : "\n\n\nimpossible de retirer le drapeau\n\n\n";
+				Element leftNeighbor = current.left;
+				Element rightNeighbor = current.right;
+				leftNeighbor.right = rightNeighbor;
+				rightNeighbor.right = leftNeighbor;
+				current = rightNeighbor;
+				
 			} catch (AssertionError e) {
 				e.printStackTrace();
 				System.exit(0);
@@ -79,12 +76,28 @@ public class List<T extends SuperT> {
 
 		@Override
 		public void addLeft(T v) { 
-			// to do
+			Element leftNeighbor = current.left;
+			
+			Element elem = new Element (v);
+			
+			elem.left = leftNeighbor;
+			elem.right = current;
+			current.left = elem;
+			leftNeighbor.right = elem;
+
 		}
 
 		@Override
 		public void addRight(T v) {
-			// to do
+			Element rightNeighbor = current.right;
+			
+			Element elem = new Element (v);
+			
+			elem.left = current;
+			elem.right = rightNeighbor;
+			current.right = elem;
+			rightNeighbor.left = elem;
+			
 		}
 
 		@Override
@@ -124,11 +137,22 @@ public class List<T extends SuperT> {
 	}
 
 	public void addHead(T v) { 
-		
+        Element elt = new Element(v);
+        
+        elt.right = flag.right;
+        elt.left = flag;
+        flag.right.left = elt;
+        flag.right = elt;
+			
 	}
 
 	public void addTail(T v) { 
+		Element elt = new Element(v);
 		
+	    elt.left = flag.left;
+	    elt.right = flag;
+	    flag.left.right = elt;
+	    flag.left = elt;
 	}
 
 	@SuppressWarnings("unchecked")
