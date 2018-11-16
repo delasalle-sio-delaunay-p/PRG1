@@ -3,6 +3,13 @@ package fr.istic.prg1.list;
 import fr.istic.prg1.list_util.SuperT;
 import fr.istic.prg1.list_util.Iterator;
 
+/**
+ * Classe List - TP5
+ * @author NABLI Wiem, DELAUNAY Pierre
+ * @version 1.0.1
+ * @since 2018-11-14
+ */
+
 public class List<T extends SuperT> {
 	// liste en double chainage par references
 
@@ -31,27 +38,44 @@ public class List<T extends SuperT> {
 		private ListIterator() { 
 			current = flag.right;
 		}
-
+		
+		/**
+		 * Positionner l'élément courant sur son voisin droit
+		 */
 		@Override
 		public void goForward() { 
 			current = current.right;
 		}
-
+		
+		/**
+		 * Positionner l'élément courant sur son voisin gauche
+		 */
 		@Override
 		public void goBackward() { 
 			current = current.left;
 		}
-
+		
+		/**
+		 * Positionner l'élément courant sur l'élément de tête 
+		 */
 		@Override
 		public void restart() {
 			current = flag.right;
 		}
 
+		/**
+		 * Vérifier si l'élément courant est positionné sur le drapeau
+		 * @return boolean
+		 */
 		@Override
 	    public boolean isOnFlag() { 
 			return current == flag; 
 		}
 
+		/**
+		 * Supprimer l'élément courant, l'élément courant se positionne à droite de l'élément supprimé
+		 * @pre l'élément courant n'est pas le drapeau
+		 */
 		@Override
 		public void remove() {
 			try {
@@ -68,38 +92,51 @@ public class List<T extends SuperT> {
 			}
 		}
 
+		/**
+		 * Retourner la valeur de l'élément courant
+		 */
 		@Override		 
 		public T getValue() { return current.value; }
-
+		
+		/**
+		 * Avancer l'itérateur et retourner la valeur du nouvel élément courant
+		 */
 		@Override
-	        public T nextValue() { goForward(); return current.value;  }
+	    public T nextValue() { goForward(); return current.value;  }
 
+		/**
+		 * Ajouter v à gauche de l'élément courant et positionner l'élément courant sur le nouvel élément
+		 */
 		@Override
 		public void addLeft(T v) { 
-			Element leftNeighbor = current.left;
-			
-			Element elem = new Element (v);
-			
-			elem.left = leftNeighbor;
-			elem.right = current;
-			current.left = elem;
-			leftNeighbor.right = elem;
-
+            Element elem = new Element(v);
+            
+            elem.left = current.left;
+            elem.right = current;
+            current.left.right = elem;
+            current.left = elem;
+            
+            goBackward();
 		}
-
+		
+		/**
+		 * Ajouter v à droite de l'élément courant et positionner l'élément courant sur le nouvel élément
+		 */
 		@Override
 		public void addRight(T v) {
-			Element rightNeighbor = current.right;
-			
-			Element elem = new Element (v);
-			
-			elem.left = current;
-			elem.right = rightNeighbor;
-			current.right = elem;
-			rightNeighbor.left = elem;
-			
+            Element elem = new Element(v);
+            
+            elem.right = current.right;
+            elem.left = current;
+            current.right.left = elem;
+            current.right = elem;
+            
+            goForward();		
 		}
 
+		/**
+		 * Met à jour la valeur de l'élément courant
+		 */
 		@Override
 		public void setValue(T v) { 
 			current.value = v; 
@@ -121,38 +158,57 @@ public class List<T extends SuperT> {
 	public ListIterator iterator() { 
 		return new ListIterator(); 
 	}
-
+	
+	/**
+	 * Vérifie si la liste est vide
+	 * @return true si la liste vide, false sinon
+	 */
 	public boolean isEmpty() { 
 		return flag.right == flag && flag.left == flag; 
 	}
 
+	/**
+	 * Supprimer toutes les valeurs de la liste
+	 */
 	public void clear() {  
 		setFlag(flag.value); 
 	}
 
+	/**
+	 * Affecter la valeur v au drapeau
+	 * @param v
+	 */
 	public void setFlag(T v) {
         flag = new Element(v);
         flag.left = flag;
         flag.right = flag;
 	}
 
+	/**
+	 * Ajouter v en tête de liste
+	 * @param v
+	 */
 	public void addHead(T v) { 
-        Element elt = new Element(v);
+        Element elem = new Element(v);
         
-        elt.right = flag.right;
-        elt.left = flag;
-        flag.right.left = elt;
-        flag.right = elt;
+        elem.right = flag.right;
+        elem.left = flag;
+        flag.right.left = elem;
+        flag.right = elem;
 			
 	}
 
+	/**
+	 * Ajouter v en queue de liste
+	 * @param v
+	 */
 	public void addTail(T v) { 
-		Element elt = new Element(v);
+		Element elem = new Element(v);
 		
-	    elt.left = flag.left;
-	    elt.right = flag;
-	    flag.left.right = elt;
-	    flag.left = elt;
+	    elem.left = flag.left;
+	    elem.right = flag;
+	    flag.left.right = elem;
+	    flag.left = elem;
 	}
 
 	@SuppressWarnings("unchecked")
