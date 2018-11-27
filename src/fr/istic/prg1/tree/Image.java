@@ -29,6 +29,61 @@ public class Image extends AbstractImage {
 	}
 
 	/**
+	 * @pre !this.isEmpty()
+	 * @return hauteur de this
+	 */
+	public int height() {
+		Iterator<Node> it = this.iterator();
+		return heightAux(it);
+	}
+	
+	/**
+	 * Methode auxiliaire pour le calcul de la hauteur
+	 * @param it
+	 * @return int
+	 */
+	private int heightAux(Iterator<Node> it) {
+		int height = 0;
+		
+		return height;
+	}
+	
+	/**
+	 * @pre !this.isEmpty()
+	 * @return nombre de noeuds de this
+	 */
+	public int numberOfNodes() {
+		Iterator<Node> it = this.iterator();
+		
+		return numberOfNodesAux(it);
+	}
+	
+	/**
+	 * Methode auxiliaire pour le calcul du nombre de noeuds
+	 * @param it
+	 * @return int
+	 */
+	private int numberOfNodesAux(Iterator<Node> it) {
+		int count = 0;
+
+		NodeType ntype = it.nodeType();
+
+		switch (ntype) {
+		case LEAF:
+			return 1;
+		case DOUBLE:
+			it.goLeft();
+			count += numberOfNodesAux(it);
+			it.goUp();
+			it.goRight();
+			count += numberOfNodesAux(it);
+			it.goUp();
+		}
+		
+		return count;
+	}
+	
+	/**
 	 * @param x
 	 *            abscisse du point
 	 * @param y
@@ -38,33 +93,35 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public boolean isPixelOn(int x, int y) {
-		Iterator<Node> it = this.iterator();
-		int tmpX = 256, tmpY = 256;
+		int depth = 0;
+	    int upperX = 0, upperY = 0;
+	    int width = 256;
+	    int height;
 
-		while (!it.isEmpty()) {
+	    Iterator<Node> it = this.iterator();
+	    
+	     while (it.nodeType() != NodeType.LEAF) {
+	            height = width / 2;
+	            if (depth % 2 == 0) {
+	                if (y < height + upperY) {
+	                    it.goLeft();
+	                } else {
+	                    upperY += height;
+	                    it.goRight();
+	                }
+	            } else {
+	                width = height;
+	                if (x < upperX + height) {
+	                    it.goLeft();
+	                } else {
+	                    upperX += height;
+	                    it.goRight();
+	                }
+	            }
+	            ++depth;
+	     }
 
-			if (tmpX == tmpY) {
-				if (x < (tmpX/2))
-					it.goLeft();  
-
-				else
-					it.goRight(); 
-
-				tmpX = tmpX/2;
-			}
-			else {
-				if (y < (tmpY/2))
-					it.goLeft();  
-
-				else
-					it.goRight();  
-
-				tmpY = tmpY/2;
-			}
-		}
-
-		it.goUp();
-		return (it.getValue().equals(Node.valueOf(1)));
+	     return it.getValue().state == 1;
 	}
 
 	/**
@@ -91,9 +148,9 @@ public class Image extends AbstractImage {
 	 */
 	private void affectAux(Iterator<Node> it, Iterator<Node> it1) {
 		
-		NodeType otype = it1.nodeType();
+		NodeType ntype = it1.nodeType();
 
-		switch (otype) {
+		switch (ntype) {
 		case LEAF:
 			it.addValue(it1.getValue());
 			break;
@@ -124,8 +181,10 @@ public class Image extends AbstractImage {
 		itThis.clear();
 
 		if (!it.isEmpty()) {
-			rotateAux(it, itThis);
+			rotate180Aux(it, itThis);
 		}
+		
+		//this.plotImage(1, );
 	}
 	
 	/**
@@ -133,9 +192,23 @@ public class Image extends AbstractImage {
 	 * @param it
 	 * @param itThis
 	 */
-	private void rotateAux (Iterator<Node> it, Iterator<Node> itThis) {
+	private void rotate180Aux(Iterator<Node> it, Iterator<Node> itThis) {
 	
 		if (!it.isEmpty()) {
+			
+			int st = it.getValue().state;
+			itThis.addValue(Node.valueOf(st));
+			
+			it.goLeft();
+			itThis.goRight();
+			rotate180Aux(it, itThis);
+			it.goUp();
+			itThis.goUp();
+			it.goRight();
+			itThis.goLeft();
+			rotate180Aux(it, itThis);
+			it.goUp();
+			itThis.goUp();
 			
 		}
 		
@@ -161,13 +234,36 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public void videoInverse() {
-		System.out.println();
-		System.out.println("-------------------------------------------------");
-		System.out.println("Fonction ï¿½ ï¿½crire");
-		System.out.println("-------------------------------------------------");
-		System.out.println();
+
+		Iterator<Node> it = this.iterator();
+	
+		videoInverseAux(it);
+	
 	}
 
+	/**
+	 * Methode auxiliaire pour videoInverse
+	 * @param it, iterator
+	 */
+	private void videoInverseAux(Iterator<Node> it) {
+		
+		if (!it.isEmpty()) {
+			int st = it.getValue().state;
+			
+			// inversion des pixels allumés (1) et éteints (0)
+			
+			if (st == 0) { it.setValue(Node.valueOf(1)); }
+			else if (st == 1) { it.setValue(Node.valueOf(0)); }
+			
+			it.goLeft();
+			videoInverseAux(it);
+			it.goUp();
+			it.goRight();
+			videoInverseAux(it);
+			it.goUp();			
+		}
+	}
+	
 	/**
 	 * this devient image miroir verticale de image2.
 	 *
@@ -210,11 +306,7 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public void zoomIn(AbstractImage image2) {
-		System.out.println();
-		System.out.println("-------------------------------------------------");
-		System.out.println("Fonction ï¿½ ï¿½crire");
-		System.out.println("-------------------------------------------------");
-		System.out.println();
+		// to do
 	}
 
 	/**
@@ -228,6 +320,9 @@ public class Image extends AbstractImage {
 	@Override
 	public void zoomOut(AbstractImage image2) {
 		// to do
+		
+        Iterator<Node> it = this.iterator();
+        it.clear();
 	}
 
 	/**
@@ -243,26 +338,21 @@ public class Image extends AbstractImage {
 	public void intersection(AbstractImage image1, AbstractImage image2) {
 		Iterator<Node> it1 = image1.iterator();
 		Iterator<Node> it2 = image2.iterator();
-		Iterator<Node> it3 = this.iterator();
+		Iterator<Node> itThis = this.iterator();
 
-		it3.clear();
+		itThis.clear();
 
 		if (!it1.isEmpty() && !it2.isEmpty()){
-			intersectionAux(it1, it2, it3);
+			intersectionAux(it1, it2, itThis);
 		}
 	}
 
 	
 	private void intersectionAux(Iterator<Node> it1, Iterator<Node> it2, Iterator<Node> itThis) {
-		if (!it1.isEmpty() && !it2.isEmpty()){
-			Node nd1 = it1.getValue();
-			Node nd2 = it2.getValue();
-			
-			
-			
-			
-			
-		}
+		
+		int st1 = it1.getValue().state;
+		int st2 = it2.getValue().state;
+
 	} 	
 	
 	
@@ -276,11 +366,30 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public void union(AbstractImage image1, AbstractImage image2) {
-		System.out.println();
-		System.out.println("-------------------------------------------------");
-		System.out.println("Fonction ï¿½ ï¿½crire");
-		System.out.println("-------------------------------------------------");
-		System.out.println();
+		Iterator<Node> it1 = image1.iterator();
+		Iterator<Node> it2 = image2.iterator();
+		Iterator<Node> itThis = this.iterator();
+
+		itThis.clear();
+
+		if (!it1.isEmpty() && !it2.isEmpty()){
+			unionAux(it1, it2, itThis);
+		}
+	}
+	
+	private void unionAux(Iterator<Node> it1, Iterator<Node> it2, Iterator<Node> itThis) {
+		
+
+		int st1 = it1.getValue().state;
+		int st2 = it2.getValue().state;
+			
+		if (st1 == 2 && st2 == 2) {
+				
+		} 
+		else if (st1 == 1 || st2 == 1) {
+				
+		}
+		
 	}
 
 	/**
@@ -314,12 +423,11 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public boolean sameLeaf(int x1, int y1, int x2, int y2) {
-		System.out.println();
-		System.out.println("-------------------------------------------------");
-		System.out.println("Fonction ï¿½ ï¿½crire");
-		System.out.println("-------------------------------------------------");
-		System.out.println();
-		return false;
+		
+		Iterator<Node> it = this.iterator();
+		boolean rtn = true;
+		
+		return rtn;
 	}
 
 	/**
@@ -331,12 +439,13 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public boolean isIncludedIn(AbstractImage image2) {
-		System.out.println();
-		System.out.println("-------------------------------------------------");
-		System.out.println("Fonction ï¿½ ï¿½crire");
-		System.out.println("-------------------------------------------------");
-		System.out.println();
+		// to do
 	    return false;
 	}
 
+	private boolean isIncludedInAux(Iterator<Node> itThis, Iterator<Node> it2) {
+		
+		return false;
+		
+	}
 }
