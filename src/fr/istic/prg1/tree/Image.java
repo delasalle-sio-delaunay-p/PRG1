@@ -194,24 +194,20 @@ public class Image extends AbstractImage {
 	 */
 	private void rotate180Aux(Iterator<Node> it, Iterator<Node> itThis) {
 	
-		if (!it.isEmpty()) {
+		int st = it.getValue().state;
+		itThis.addValue(Node.valueOf(st));
 			
-			int st = it.getValue().state;
-			itThis.addValue(Node.valueOf(st));
-			
-			it.goLeft();
-			itThis.goRight();
-			rotate180Aux(it, itThis);
-			it.goUp();
-			itThis.goUp();
-			it.goRight();
-			itThis.goLeft();
-			rotate180Aux(it, itThis);
-			it.goUp();
-			itThis.goUp();
-			
-		}
-		
+		it.goLeft();
+		itThis.goRight();
+		rotate180Aux(it, itThis);
+		it.goUp();
+		itThis.goUp();
+		it.goRight();
+		itThis.goLeft();
+		rotate180Aux(it, itThis);
+		it.goUp();
+		itThis.goUp();
+					
 	}	
 
 	/**
@@ -250,7 +246,7 @@ public class Image extends AbstractImage {
 		if (!it.isEmpty()) {
 			int st = it.getValue().state;
 			
-			// inversion des pixels allum�s (1) et �teints (0)
+			// inversion des pixels allumes (1) et eteints (0)
 			
 			if (st == 0) { it.setValue(Node.valueOf(1)); }
 			else if (st == 1) { it.setValue(Node.valueOf(0)); }
@@ -273,11 +269,7 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public void mirrorV(AbstractImage image2) {
-		System.out.println();
-		System.out.println("-------------------------------------------------");
-		System.out.println("Fonction � �crire");
-		System.out.println("-------------------------------------------------");
-		System.out.println();
+		// to do
 	}
 
 	/**
@@ -289,11 +281,7 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public void mirrorH(AbstractImage image2) {
-		System.out.println();
-		System.out.println("-------------------------------------------------");
-		System.out.println("Fonction � �crire");
-		System.out.println("-------------------------------------------------");
-		System.out.println();
+		// to do
 	}
 
 	/**
@@ -321,8 +309,23 @@ public class Image extends AbstractImage {
 	public void zoomOut(AbstractImage image2) {
 		// to do
 		
-        Iterator<Node> it = this.iterator();
-        it.clear();
+        Iterator<Node> itThis = this.iterator();
+        itThis.clear();
+        
+        itThis.addValue(Node.valueOf(2));
+        itThis.goLeft();
+        itThis.addValue(Node.valueOf(0)); // moitié inférieure éteinte
+        itThis.goRoot();
+        itThis.goLeft();
+        itThis.addValue(Node.valueOf(2));
+        itThis.goRight();
+        itThis.addValue(Node.valueOf(0)); // coin supérieur droit éteint
+        itThis.goUp();
+        itThis.goLeft();      
+        this.affectAux(itThis, image2.iterator() );
+        
+        itThis.goRoot();
+        
 	}
 
 	/**
@@ -371,25 +374,50 @@ public class Image extends AbstractImage {
 		Iterator<Node> itThis = this.iterator();
 
 		itThis.clear();
-
-		if (!it1.isEmpty() && !it2.isEmpty()){
-			unionAux(it1, it2, itThis);
-		}
+		
+		unionAux(it1, it2, itThis);
 	}
 	
 	private void unionAux(Iterator<Node> it1, Iterator<Node> it2, Iterator<Node> itThis) {
 		
-
-		int st1 = it1.getValue().state;
-		int st2 = it2.getValue().state;
-			
-		if (st1 == 2 && st2 == 2) {
-				
-		} 
-		else if (st1 == 1 || st2 == 1) {
-				
-		}
+		int st = it1.getValue().state + it2.getValue().state;
 		
+		if (st == 4) {
+			// les 2 states sont à 2
+			itThis.addValue(Node.valueOf(2));
+			it1.goLeft(); it2.goLeft(); itThis.goLeft();
+			unionAux(it1, it2, itThis);
+			int stLeft = itThis.getValue().state;
+			it1.goUp(); it2.goUp(); itThis.goUp();
+			it1.goRight(); it2.goRight(); itThis.goRight();
+			unionAux(it1, it2, itThis);
+			int stRight = itThis.getValue().state;
+			it1.goUp(); it2.goUp(); itThis.goUp();
+			
+            if (stLeft == stRight && stLeft != 2) {         
+                itThis.clear();
+                itThis.addValue(Node.valueOf(stLeft));
+            }			
+	
+		} else if (st == 3) {
+			// un des 2 states vaut 1 : 2,1 || 1,2
+			itThis.addValue(Node.valueOf(1));
+		}
+		else if (st == 2 ) {
+			// 3 cas possibles : 2,0 || 0,2 || 1,1
+            if (it1.getValue().state == 0) {
+                affectAux(itThis, it2);
+            } else if (it1.getValue().state == 2) {
+                affectAux(itThis, it1);
+            } else {
+                itThis.addValue(Node.valueOf(1));
+            }	
+		}
+		else {
+			// un des 2 states vaut 1 ou les 2 sont à 0
+			itThis.addValue(Node.valueOf(st));
+		}
+						
 	}
 
 	/**
@@ -400,11 +428,7 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public boolean testDiagonal() {
-		System.out.println();
-		System.out.println("-------------------------------------------------");
-		System.out.println("Fonction � �crire");
-		System.out.println("-------------------------------------------------");
-		System.out.println();
+		// to do
 	    return false;
 	}
 
