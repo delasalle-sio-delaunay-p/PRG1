@@ -282,8 +282,18 @@ public class Image extends AbstractImage {
 	@Override
 	public void mirrorH(AbstractImage image2) {
 		// to do
+		
+        Iterator<Node> itThis = this.iterator();
+        Iterator<Node> it2 = image2.iterator();
+        itThis.clear();
+        
+        this.mirrorHAux(itThis, it2);
 	}
 
+	private void mirrorHAux(Iterator<Node> itThis, Iterator<Node> it2) {
+		
+	}
+	
 	/**
 	 * this devient quart supérieur gauche de image2.
 	 *
@@ -295,6 +305,23 @@ public class Image extends AbstractImage {
 	@Override
 	public void zoomIn(AbstractImage image2) {
 		// to do
+		
+        Iterator<Node> itThis = this.iterator();
+        Iterator<Node> it2 = image2.iterator();
+        
+        itThis.clear();
+        
+        this.zoomInAux(itThis, it2);
+	}
+	
+	private void zoomInAux(Iterator<Node> itThis, Iterator<Node> it2) {
+		
+		while (it2.nodeType() != NodeType.LEAF) {
+			it2.goLeft();
+		}
+		
+		it2.goUp();
+		this.affectAux(itThis, it2);
 	}
 
 	/**
