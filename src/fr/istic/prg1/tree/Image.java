@@ -165,6 +165,29 @@ public class Image extends AbstractImage {
 			break;
 		}
 	}
+
+	/***
+	 * Copie des les noeuds de l'arbre 2 dans this
+	 * @param it, itérateur sur l'arbre à remplir
+	 * @param it2, itérateur sur l'arbre à copier
+	 * @param root, racine à copier
+	 */
+	private void affectAux(Iterator<Node> it, Iterator<Node> it2, Node root) {
+		
+		it.addValue(Node.valueOf(it2.getValue().state));
+		
+		if (it2.nodeType() == NodeType.DOUBLE) {
+			it.goRight(); it2.goRight();
+			affectAux(it, it2, null);
+			it.goLeft(); it2.goLeft();
+			affectAux(it, it2, null);
+		}
+		
+		if (!it2.getValue().equals(root)) {
+			it.goUp(); it2.goUp();
+		}
+		
+	}
 	
 	/**
 	 * this devient rotation de image2 à 180 degrés.
@@ -183,8 +206,7 @@ public class Image extends AbstractImage {
 		if (!it.isEmpty()) {
 			rotate180Aux(it, itThis);
 		}
-		
-		//this.plotImage(1, );
+
 	}
 	
 	/**
@@ -285,14 +307,40 @@ public class Image extends AbstractImage {
 		
         Iterator<Node> itThis = this.iterator();
         Iterator<Node> it2 = image2.iterator();
-        itThis.clear();
         
-        this.mirrorHAux(itThis, it2);
+        itThis.clear();
+
+		itThis.addValue (it2.getValue());
+		
+		if (it2.nodeType() == NodeType.DOUBLE) {
+			
+			// Moitié supérieure
+			
+			itThis.goLeft(); it2.goLeft();
+			itThis.addValue (it2.getValue());
+			
+			if (it2.nodeType() == NodeType.DOUBLE) {
+				itThis.goLeft();
+				it2.goRight();
+				affectAux(itThis, it2, it2.getValue());
+			}
+			itThis.goUp(); itThis.goUp(); it2.goUp(); it2.goUp();
+			
+			// Moitié inférieure
+			
+			itThis.goRight(); it2.goRight();
+			itThis.addValue (it2.getValue());
+			
+			if (it2.nodeType() == NodeType.DOUBLE) {
+				itThis.goLeft();
+				it2.goRight();
+				affectAux(itThis, it2, it2.getValue());
+			}
+			
+		}
+        
 	}
 
-	private void mirrorHAux(Iterator<Node> itThis, Iterator<Node> it2) {
-		
-	}
 	
 	/**
 	 * this devient quart supérieur gauche de image2.
@@ -304,25 +352,34 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public void zoomIn(AbstractImage image2) {
-		// to do
 		
         Iterator<Node> itThis = this.iterator();
         Iterator<Node> it2 = image2.iterator();
         
         itThis.clear();
         
-        this.zoomInAux(itThis, it2);
-	}
-	
-	private void zoomInAux(Iterator<Node> itThis, Iterator<Node> it2) {
+        // Image pleine
+        if (it2.nodeType() == NodeType.LEAF) { 
+        	this.affect(image2); 
+        }
+        
+		it2.goLeft();
 		
-		while (it2.nodeType() != NodeType.LEAF) {
+		// Image avec moitié supérieure pleine
+		if (it2.nodeType() == NodeType.LEAF) {
+			itThis.addValue(Node.valueOf( it2.getValue().state));
+		}
+		else {
+			
+			// Cas général
 			it2.goLeft();
+			affectAux (itThis, it2, it2.getValue());
+			
 		}
 		
-		it2.goUp();
-		this.affectAux(itThis, it2);
 	}
+	
+
 
 	/**
 	 * Le quart supérieur gauche de this devient image2, le reste de this
@@ -336,22 +393,35 @@ public class Image extends AbstractImage {
 	public void zoomOut(AbstractImage image2) {
 		// to do
 		
-        Iterator<Node> itThis = this.iterator();
-        itThis.clear();
-        
-        itThis.addValue(Node.valueOf(2));
-        itThis.goLeft();
-        itThis.addValue(Node.valueOf(0)); // moitié inférieure éteinte
-        itThis.goRoot();
-        itThis.goLeft();
-        itThis.addValue(Node.valueOf(2));
-        itThis.goRight();
-        itThis.addValue(Node.valueOf(0)); // coin supérieur droit éteint
-        itThis.goUp();
-        itThis.goLeft();      
-        this.affectAux(itThis, image2.iterator() );
-        
-        itThis.goRoot();
+		
+		/*
+		try {
+			
+	        Iterator<Node> itThis = this.iterator();
+	        Iterator<Node> it2 = image2.iterator();
+	        
+	        itThis.clear();
+	        
+	        itThis.addValue(Node.valueOf(2));
+	        itThis.goLeft();
+	        itThis.addValue(Node.valueOf(0)); // moitié inférieure éteinte
+	        
+	        itThis.goRoot();
+	        itThis.goLeft();
+	        itThis.addValue(Node.valueOf(2));
+	        itThis.goRight();
+	        itThis.addValue(Node.valueOf(0)); // coin supérieur droit éteint
+	        
+	        itThis.goUp();
+	        itThis.goLeft();      
+	        
+	        affectAux(itThis, it2, it2.getValue());
+	        
+		} catch (AssertionError e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+		*/
         
 	}
 
@@ -455,10 +525,24 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public boolean testDiagonal() {
-		// to do
-	    return false;
+		
+		boolean rtn = false;
+		Iterator<Node> itThis = iterator();
+			
+		rtn = testDiagonalAux(itThis);	
+		
+	    return rtn;
 	}
 
+	/***
+	 * Méthode auxiliaire testDiagonal
+	 * @param itThis
+	 * @return boolean
+	 */
+	private boolean testDiagonalAux(Iterator<Node> itThis) {
+		return false;
+	}
+	
 	/**
 	 * @param x1
 	 *            abscisse du premier point
@@ -490,13 +574,38 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public boolean isIncludedIn(AbstractImage image2) {
-		// to do
-	    return false;
+		
+		Iterator<Node> itThis = this.iterator();
+		Iterator<Node>	it2 = image2.iterator();
+		
+		return isIncludedInAux(itThis, it2, it2.getValue());
 	}
 
-	private boolean isIncludedInAux(Iterator<Node> itThis, Iterator<Node> it2) {
+	private boolean isIncludedInAux(Iterator<Node> itThis, Iterator<Node> it2, Node root) {
+		boolean rtn = false, keepGoing = true;
 		
-		return false;
+		if (itThis.nodeType() == NodeType.LEAF) {
+			rtn = itThis.getValue().state == 0;
+			keepGoing = false;
+		}
+		
+		if (it2.nodeType() == NodeType.LEAF) {
+			rtn = rtn || it2.getValue().state == 1;
+			keepGoing = false;
+		}
+		
+		if (keepGoing) {
+			itThis.goRight(); it2.goRight();
+			rtn = isIncludedInAux(itThis, it2, null);
+			itThis.goLeft(); it2.goRight();
+			rtn = rtn && isIncludedInAux(itThis, it2, null);
+		}
+		
+		if (!it2.getValue().equals(root)) {
+			itThis.goUp(); it2.goUp();
+		}
+		
+		return rtn;
 		
 	}
 }
