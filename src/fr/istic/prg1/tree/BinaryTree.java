@@ -38,6 +38,7 @@ public class BinaryTree<T> {
 	private Element root;
 
 	public BinaryTree() {
+		root = new Element();
 	}
 
 	/**
@@ -52,7 +53,7 @@ public class BinaryTree<T> {
 	 * @return true si l'arbre this est vide, false sinon
 	 */
 	public boolean isEmpty() {
-	    return false;
+		return root.isEmpty();
 	}
 
 	/**
@@ -76,6 +77,11 @@ public class BinaryTree<T> {
 		public void goLeft() {
 			try {
 				assert !this.isEmpty() : "le butoir n'a pas de fils";
+				assert currentNode.left != null : "pas de fils gauche";
+				
+				stack.push(currentNode);
+				currentNode = currentNode.left;
+				
 			} catch (AssertionError e) {
 				e.printStackTrace();
 				System.exit(0);
@@ -91,6 +97,11 @@ public class BinaryTree<T> {
 		public void goRight() {
 			try {
 				assert !this.isEmpty() : "le butoir n'a pas de fils";
+				assert currentNode.right != null : "pas de fils droit";
+				
+				stack.push(currentNode);
+				currentNode = currentNode.right;
+				
 			} catch (AssertionError e) {
 				e.printStackTrace();
 				System.exit(0);
@@ -106,6 +117,11 @@ public class BinaryTree<T> {
 		public void goUp() {
 			try {
 				assert !stack.empty() : " la racine n'a pas de pere";
+				
+				if (!stack.empty()) {
+					currentNode = stack.pop(); 
+				}
+				
 			} catch (AssertionError e) {
 				e.printStackTrace();
 				System.exit(0);
@@ -117,6 +133,8 @@ public class BinaryTree<T> {
 		 */
 		@Override
 		public void goRoot() {
+			stack.clear();
+			currentNode = root;
 		}
 
 		/**
@@ -124,7 +142,7 @@ public class BinaryTree<T> {
 		 */
 		@Override
 		public boolean isEmpty() {
-		    return false;
+			return currentNode.isEmpty();
 		}
 
 		/**
@@ -132,7 +150,16 @@ public class BinaryTree<T> {
 		 */
 		@Override
 		public NodeType nodeType() {
-		    return NodeType.SENTINEL;
+			
+			if (currentNode == null || currentNode.isEmpty()) { return NodeType.SENTINEL; }
+			
+			if (currentNode.left.isEmpty() && currentNode.right.isEmpty()) { return NodeType.LEAF; }
+				
+			if (currentNode.right.isEmpty()) { return NodeType.SIMPLE_LEFT; }
+				
+			if (currentNode.left.isEmpty()) { return NodeType.SIMPLE_RIGHT; }
+				
+			return NodeType.DOUBLE;
 		}
 
 		/**
@@ -144,6 +171,19 @@ public class BinaryTree<T> {
 		public void remove() {
 			try {
 				assert nodeType() != NodeType.DOUBLE : "retirer : retrait d'un noeud double non permis";
+				
+				switch (this.nodeType()) {
+				case LEAF:
+					currentNode = new Element();
+					break;
+				case SIMPLE_LEFT:
+					currentNode = currentNode.left;
+					break;
+				case SIMPLE_RIGHT:
+					currentNode = currentNode.right;
+					break;
+				}	
+				
 			} catch (AssertionError e) {
 				e.printStackTrace();
 				System.exit(0);
@@ -156,14 +196,19 @@ public class BinaryTree<T> {
 		 */
 		@Override
 		public void clear() {
+			
+			currentNode.left = null;
+			currentNode.right = null;
 		}
+		
+
 
 		/**
 		 * @return La valeur du noeud courant.
 		 */
 		@Override
 		public T getValue() {
-		    return null;
+			return currentNode.value;
 		}
 
 		/**
@@ -179,6 +224,11 @@ public class BinaryTree<T> {
 		public void addValue(T v) {
 			try {
 				assert isEmpty() : "Ajouter : on n'est pas sur un butoir";
+				
+				currentNode.value = v;
+				currentNode.left = new Element();
+				currentNode.right = new Element();
+				
 			} catch (AssertionError e) {
 				e.printStackTrace();
 				System.exit(0);
