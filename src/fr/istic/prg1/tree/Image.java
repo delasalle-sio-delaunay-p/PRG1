@@ -43,9 +43,24 @@ public class Image extends AbstractImage {
 	 * @return int
 	 */
 	private int heightAux(Iterator<Node> it) {
-		int height = 0;
+		NodeType nType = it.nodeType();
 		
-		return height;
+		int leftH = 0;
+		int rightH = 0;
+		
+		if (nType == NodeType.LEAF) {
+			return 0;
+		}
+		
+		if (nType == NodeType.DOUBLE) {
+			it.goLeft();
+			leftH += heightAux(it);
+			it.goUp(); it.goRight();
+			rightH += heightAux(it);
+			it.goUp();
+		}
+
+		return Math.max( (leftH + 1), (rightH + 1) );
 	}
 	
 	/**
@@ -167,7 +182,7 @@ public class Image extends AbstractImage {
 	}
 
 	/***
-	 * Copie des les noeuds de l'arbre 2 dans this
+	 * Surchage affectAux - copie des les noeuds de l'arbre 2 dans this
 	 * @param it, itérateur sur l'arbre à remplir
 	 * @param it2, itérateur sur l'arbre à copier
 	 * @param root, racine à copier
@@ -576,7 +591,7 @@ public class Image extends AbstractImage {
 	public boolean isIncludedIn(AbstractImage image2) {
 		
 		Iterator<Node> itThis = this.iterator();
-		Iterator<Node>	it2 = image2.iterator();
+		Iterator<Node> it2 = image2.iterator();
 		
 		return isIncludedInAux(itThis, it2, it2.getValue());
 	}
