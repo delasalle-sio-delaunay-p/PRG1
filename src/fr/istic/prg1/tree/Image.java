@@ -555,7 +555,10 @@ public class Image extends AbstractImage {
 	@Override
 	public void zoomOut(AbstractImage image2) {
 		
-		/*
+		/**
+		 * Work in progress
+		 */
+		
 		Iterator<Node> itThis = this.iterator();
 	    Iterator<Node> it2 = image2.iterator();
 	        
@@ -574,10 +577,9 @@ public class Image extends AbstractImage {
 	    itThis.goUp();
 	    itThis.goLeft();      
 	        
-	    this.affectAux(itThis, it2, 0);
+	    this.affectFromNode(itThis, it2, it2.getValue());
 	    itThis.goRoot();
 	    
-	    */
    
 	}
 
