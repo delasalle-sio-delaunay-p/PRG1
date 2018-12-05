@@ -559,6 +559,7 @@ public class Image extends AbstractImage {
 		 * Work in progress
 		 */
 		
+		/*
 		Iterator<Node> itThis = this.iterator();
 	    Iterator<Node> it2 = image2.iterator();
 	        
@@ -578,8 +579,8 @@ public class Image extends AbstractImage {
 	    itThis.goLeft();      
 	        
 	    this.affectFromNode(itThis, it2, it2.getValue());
-	    itThis.goRoot();
 	    
+	    */
    
 	}
 
