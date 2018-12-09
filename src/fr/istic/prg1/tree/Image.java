@@ -33,6 +33,8 @@ public class Image extends AbstractImage {
 	 * @return hauteur de this
 	 */
 	public int height() {
+		assert (!this.isEmpty()) : "this vide";
+		
 		Iterator<Node> it = this.iterator();
 		return heightAux(it);
 	}
@@ -54,9 +56,9 @@ public class Image extends AbstractImage {
 		
 		if (nType == NodeType.DOUBLE) {
 			it.goLeft();
-			leftH += heightAux(it);
+			leftH = heightAux(it);
 			it.goUp(); it.goRight();
-			rightH += heightAux(it);
+			rightH = heightAux(it);
 			it.goUp();
 		}
 
@@ -68,6 +70,8 @@ public class Image extends AbstractImage {
 	 * @return nombre de noeuds de this
 	 */
 	public int numberOfNodes() {
+		assert (!this.isEmpty()) : "this vide";
+		
 		Iterator<Node> it = this.iterator();
 		
 		return numberOfNodesAux(it);
@@ -109,8 +113,10 @@ public class Image extends AbstractImage {
 	@Override
 	public boolean isPixelOn(int x, int y) {
 		
+		assert (!this.isEmpty()) : "this vide";
+		
 		int depth = 0;
-	    int upperX = 0, upperY = 0;
+	    int x0 = 0, y0 = 0;
 	    int width = 256;
 	    int height;
 
@@ -118,19 +124,20 @@ public class Image extends AbstractImage {
 	    
 	     while (it.nodeType() != NodeType.LEAF) {
 	            height = width / 2;
+	            
 	            if (depth % 2 == 0) {
-	                if (y < height + upperY) {
+	                if (y < height + y0) {
 	                    it.goLeft();
 	                } else {
-	                    upperY += height;
+	                    y0 += height;
 	                    it.goRight();
 	                }
 	            } else {
 	                width = height;
-	                if (x < upperX + height) {
+	                if (x < height + x0) {
 	                    it.goLeft();
 	                } else {
-	                    upperX += height;
+	                    x0 += height;
 	                    it.goRight();
 	                }
 	            }
@@ -151,6 +158,8 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public void affect(AbstractImage image2) {
+		assert (!image2.isEmpty()) : "image2 vide";
+		
 		Iterator<Node> it = this.iterator();
 		
 		it.clear();
@@ -236,7 +245,6 @@ public class Image extends AbstractImage {
 	}
 	
 	/***
-	 * affectFromNode - copie des les noeuds de l'arbre 2 à partir de root dans this
 	 * @param it, itérateur sur l'arbre à remplir
 	 * @param it2, itérateur sur l'arbre à copier
 	 * @param root, racine à copier
@@ -281,7 +289,6 @@ public class Image extends AbstractImage {
 	
 	/**
 	 * Méthode auxiliaire pour rotate180
-	 * Swap des states entre les fils
 	 * 
 	 * @param it, iterator sur this
 	 * @param it2, iterator sur image2 
@@ -403,34 +410,34 @@ public class Image extends AbstractImage {
 	 * @param it, iterator sur this
 	 * @param it2, iterator sur image2
 	 * @param root, racine d'image2
-	 * @param cutType
+	 * @param cut
 	 */	
-    private void mirrorVAux(Iterator<Node> it, Iterator<Node> it2, Node root, boolean cutType) {
+    private void mirrorVAux(Iterator<Node> it, Iterator<Node> it2, Node root, boolean cut) {
     	
 		it.addValue(Node.valueOf(it2.getValue().state));
 
 		if (it2.nodeType() == NodeType.DOUBLE) {
 
-			// Coupe Horizontale 
-			if (cutType) {
+			// Coupe horizontale 
+			if (cut) {
 
 				it.goLeft();
 				it2.goRight();
-				mirrorVAux(it, it2, null, !cutType);
+				mirrorVAux(it, it2, null, !cut);
 
 				it.goRight();
 				it2.goLeft();
-				mirrorVAux(it, it2, null, !cutType);
+				mirrorVAux(it, it2, null, !cut);
 
 				
 			} else {
 				// Coupe verticale
 				
 				it.goLeft(); it2.goLeft();
-				mirrorVAux(it, it2, null, !cutType);
+				mirrorVAux(it, it2, null, !cut);
 
 				it.goRight(); it2.goRight();
-				mirrorVAux(it, it2, null, !cutType);
+				mirrorVAux(it, it2, null, !cut);
 			}
 
 		}
@@ -466,9 +473,9 @@ public class Image extends AbstractImage {
 	 * @param it, iterator sur this
 	 * @param it2, iterator sur image2
 	 * @param root, racine d'image2
-	 * @param cutType
+	 * @param cut
 	 */
-    private void mirrorHAux(Iterator<Node> it, Iterator<Node> it2, Node root, boolean cutType) {
+    private void mirrorHAux(Iterator<Node> it, Iterator<Node> it2, Node root, boolean cut) {
     	
 		it.addValue(Node.valueOf(it2.getValue().state));
 
@@ -477,25 +484,25 @@ public class Image extends AbstractImage {
 			// Coupe verticale : copier le fils droit du noeud courant de it2
 			// comme fils gauche du noeud courant de it
 			
-			if (cutType) {
+			if (cut) {
 
 				it.goLeft();
 				it2.goRight();
-				mirrorHAux(it, it2, null, !cutType);
+				mirrorHAux(it, it2, null, !cut);
 
 				it.goRight();
 				it2.goLeft();
-				mirrorHAux(it, it2, null, !cutType);
+				mirrorHAux(it, it2, null, !cut);
 
 				
 			} else {
 				// Coupe horizontale
 				
 				it.goLeft(); it2.goLeft();
-				mirrorHAux(it, it2, null, !cutType);
+				mirrorHAux(it, it2, null, !cut);
 
 				it.goRight(); it2.goRight();
-				mirrorHAux(it, it2, null, !cutType);
+				mirrorHAux(it, it2, null, !cut);
 			}
 
 		}
@@ -534,7 +541,6 @@ public class Image extends AbstractImage {
 		}
 		else {
 			
-			// Cas général
 			it2.goLeft();
 			affectFromNode(itThis, it2, it2.getValue());
 			
@@ -542,8 +548,6 @@ public class Image extends AbstractImage {
 		
 	}
 	
-
-
 	/**
 	 * Le quart supérieur gauche de this devient image2, le reste de this
 	 * devient éteint.
@@ -560,6 +564,7 @@ public class Image extends AbstractImage {
 		 */
 		
 		/*
+		 
 		Iterator<Node> itThis = this.iterator();
 	    Iterator<Node> it2 = image2.iterator();
 	        
@@ -578,10 +583,11 @@ public class Image extends AbstractImage {
 	    itThis.goUp();
 	    itThis.goLeft();      
 	        
-	    this.affectFromNode(itThis, it2, it2.getValue());
+	    this.affectAux(itThis, it2, 0);
 	    
-	    */
-   
+	    itThis.goRoot();
+    
+   		*/
 	}
 
 	/**
@@ -610,7 +616,12 @@ public class Image extends AbstractImage {
 		
 	}
 
-	
+	/**
+	 * Méthode auxiliaire pour intersection
+	 * @param it1, iterator sur this
+	 * @param it2, iterator sur image1
+	 * @param it3, iterator sur image2
+	 */
 	private void intersectionAux(Iterator<Node> it1, Iterator<Node> it2, Iterator<Node> it3) {
 		
         if (it2.getValue().state == 0 || it3.getValue().state == 0) {
@@ -669,6 +680,9 @@ public class Image extends AbstractImage {
 	 */
 	@Override
 	public void union(AbstractImage image1, AbstractImage image2) {
+		
+		assert (!(image1.isEmpty() || image2.isEmpty())) : "Les deux images sont vides";
+		
 		Iterator<Node> it1 = image1.iterator();
 		Iterator<Node> it2 = image2.iterator();
 		Iterator<Node> itThis = this.iterator();
@@ -691,12 +705,15 @@ public class Image extends AbstractImage {
 		if (st == 4) {
 			// les 2 states sont à 2
 			itThis.addValue(Node.valueOf(2));
+			
 			it1.goLeft(); it2.goLeft(); itThis.goLeft();
 			unionAux(it1, it2, itThis);
+			
 			int stLeft = itThis.getValue().state;
 			it1.goUp(); it2.goUp(); itThis.goUp();
 			it1.goRight(); it2.goRight(); itThis.goRight();
 			unionAux(it1, it2, itThis);
+			
 			int stRight = itThis.getValue().state;
 			it1.goUp(); it2.goUp(); itThis.goUp();
 			
@@ -754,7 +771,6 @@ public class Image extends AbstractImage {
 			return it.getValue().state == 1;
 		}
 			
-
 		boolean rtn;
 
 		// Test de la moitié supérieure
@@ -861,77 +877,61 @@ public class Image extends AbstractImage {
 	@Override
 	public boolean isIncludedIn(AbstractImage image2) {
 		
-		Iterator<Node> itThis = this.iterator();
+		assert (!(this.isEmpty() || image2.isEmpty())) : "Les deux images sont vides";
+		
+		Iterator<Node> it1 = this.iterator();
 		Iterator<Node> it2 = image2.iterator();
 		
-		return this == image2 || isIncludedInAux(itThis, it2, it2.getValue());
+		return this == image2 || isIncludedInAux(it1, it2);
 	}
 
-	private boolean isIncludedInAux(Iterator<Node> itThis, Iterator<Node> it2, Node root) {
-		boolean rtn = false, keepGoing = true;
+	/**
+	 * Méthode auxiliaire pour isIncludedIn
+	 * @param it1, iterator sur this
+	 * @param it2, iterator sur image2
+	 * @return boolean
+	 */
+	private boolean isIncludedInAux(Iterator<Node> it1, Iterator<Node> it2) {
 		
-		if (itThis.nodeType() == NodeType.LEAF) {
-			rtn = itThis.getValue().state == 0;
-			keepGoing = false;
-		}
-		
-		if (it2.nodeType() == NodeType.LEAF) {
-			rtn = rtn || it2.getValue().state == 1;
-			keepGoing = false;
-		}
-		
-		if (keepGoing) {
-			itThis.goRight(); it2.goRight();
-			rtn = isIncludedInAux(itThis, it2, null);
-			itThis.goLeft(); it2.goRight();
-			rtn = rtn && isIncludedInAux(itThis, it2, null);
-		}
-		
-		if (!it2.getValue().equals(root)) {
-			itThis.goUp(); it2.goUp();
-		}
-		
-		return rtn;
-		
-	}
-	
-    /**
-     * 
-     * @param it
-     */	
-    private void verifyNodes(Iterator<Node> it) {
-    	
-        it.goLeft();
-        int leftChildState = it.getValue().state;
-        it.goUp();
-        it.goRight();
-        int rightChildState = it.getValue().state;
-        it.goUp();
+	    if (it2.getValue().state != 0 && it1.getValue().state != 1) {
+	    	
+            boolean left = false, right = false;
+            it1.goLeft(); it2.goLeft();
 
-        if (leftChildState == 2) {
-        	
-            it.goLeft();
-            verifyNodes(it);
-            leftChildState = it.getValue().state;
-            it.goUp();
+            if (it2.getValue().state == 1) {
+            	left = true;
+            }     
+            else {
+                if (it1.getValue().state == 0)
+                    left = true;
+                else
+                    this.isIncludedInAux(it1, it2);
+            }
+
+            it1.goUp(); it2.goUp();
+            it1.goRight(); it2.goRight();
             
+
+            if (it2.getValue().state == 1) {
+            	right = true;
+            }        
+            else {
+            	
+                if (it1.getValue().state == 0) {
+                    right = true;
+                }
+                else {
+                	this.isIncludedInAux(it1, it2);
+                }
+                    
+            }
+            it1.goUp(); it2.goUp();
+            
+            return left && right;
         }
 
-        if (rightChildState == 2) {
-        	
-            it.goRight();
-            verifyNodes(it);
-            rightChildState = it.getValue().state;
-            it.goUp();
-            
-        }
-
-        if (leftChildState == rightChildState && leftChildState != 2) {
-        	
-            it.clear();
-            it.addValue(Node.valueOf(leftChildState));
-            
-        }
-        
+        return false;
     }
+		
+
 }

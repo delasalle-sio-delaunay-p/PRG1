@@ -40,7 +40,7 @@ public class List<T extends SuperT> {
 		}
 		
 		/**
-		 * Positionner l'élément courant sur son voisin droit
+		 * Positionner l'ï¿½lï¿½ment courant sur son voisin droit
 		 */
 		@Override
 		public void goForward() { 
@@ -48,7 +48,7 @@ public class List<T extends SuperT> {
 		}
 		
 		/**
-		 * Positionner l'élément courant sur son voisin gauche
+		 * Positionner l'ï¿½lï¿½ment courant sur son voisin gauche
 		 */
 		@Override
 		public void goBackward() { 
@@ -56,7 +56,7 @@ public class List<T extends SuperT> {
 		}
 		
 		/**
-		 * Positionner l'élément courant sur l'élément de tête 
+		 * Positionner l'ï¿½lï¿½ment courant sur l'ï¿½lï¿½ment de tï¿½te 
 		 */
 		@Override
 		public void restart() {
@@ -64,7 +64,7 @@ public class List<T extends SuperT> {
 		}
 
 		/**
-		 * Vérifier si l'élément courant est positionné sur le drapeau
+		 * Vï¿½rifier si l'ï¿½lï¿½ment courant est positionnï¿½ sur le drapeau
 		 * @return boolean
 		 */
 		@Override
@@ -73,8 +73,8 @@ public class List<T extends SuperT> {
 		}
 
 		/**
-		 * Supprimer l'élément courant, l'élément courant se positionne à droite de l'élément supprimé
-		 * @pre l'élément courant n'est pas le drapeau
+		 * Supprimer l'ï¿½lï¿½ment courant, l'ï¿½lï¿½ment courant se positionne ï¿½ droite de l'ï¿½lï¿½ment supprimï¿½
+		 * @pre l'ï¿½lï¿½ment courant n'est pas le drapeau
 		 */
 		@Override
 		public void remove() {
@@ -93,19 +93,19 @@ public class List<T extends SuperT> {
 		}
 
 		/**
-		 * Retourner la valeur de l'élément courant
+		 * Retourner la valeur de l'ï¿½lï¿½ment courant
 		 */
 		@Override		 
 		public T getValue() { return current.value; }
 		
 		/**
-		 * Avancer l'itérateur et retourner la valeur du nouvel élément courant
+		 * Avancer l'itï¿½rateur et retourner la valeur du nouvel ï¿½lï¿½ment courant
 		 */
 		@Override
 	    public T nextValue() { goForward(); return current.value;  }
 
 		/**
-		 * Ajouter v à gauche de l'élément courant et positionner l'élément courant sur le nouvel élément
+		 * Ajouter v ï¿½ gauche de l'ï¿½lï¿½ment courant et positionner l'ï¿½lï¿½ment courant sur le nouvel ï¿½lï¿½ment
 		 */
 		@Override
 		public void addLeft(T v) { 
@@ -120,7 +120,7 @@ public class List<T extends SuperT> {
 		}
 		
 		/**
-		 * Ajouter v à droite de l'élément courant et positionner l'élément courant sur le nouvel élément
+		 * Ajouter v ï¿½ droite de l'ï¿½lï¿½ment courant et positionner l'ï¿½lï¿½ment courant sur le nouvel ï¿½lï¿½ment
 		 */
 		@Override
 		public void addRight(T v) {
@@ -135,7 +135,7 @@ public class List<T extends SuperT> {
 		}
 
 		/**
-		 * Met à jour la valeur de l'élément courant
+		 * Met ï¿½ jour la valeur de l'ï¿½lï¿½ment courant
 		 */
 		@Override
 		public void setValue(T v) { 
@@ -152,7 +152,9 @@ public class List<T extends SuperT> {
 	private Element flag;
 
 	public List() { 	
-		flag = null; 
+		flag = new Element();
+		flag.left = flag;
+		flag.right = flag;
 	}
 
 	public ListIterator iterator() { 
@@ -160,7 +162,7 @@ public class List<T extends SuperT> {
 	}
 	
 	/**
-	 * Vérifie si la liste est vide
+	 * Vï¿½rifie si la liste est vide
 	 * @return true si la liste vide, false sinon
 	 */
 	public boolean isEmpty() { 
@@ -171,7 +173,8 @@ public class List<T extends SuperT> {
 	 * Supprimer toutes les valeurs de la liste
 	 */
 	public void clear() {  
-		setFlag(flag.value); 
+        flag.left = flag;
+        flag.right = flag;
 	}
 
 	/**
@@ -179,13 +182,11 @@ public class List<T extends SuperT> {
 	 * @param v
 	 */
 	public void setFlag(T v) {
-        flag = new Element(v);
-        flag.left = flag;
-        flag.right = flag;
+		setFlag(v); 
 	}
 
 	/**
-	 * Ajouter v en tête de liste
+	 * Ajouter v en tï¿½te de liste
 	 * @param v
 	 */
 	public void addHead(T v) { 
