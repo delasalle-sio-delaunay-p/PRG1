@@ -854,7 +854,7 @@ public class Image extends AbstractImage {
 	            if ((x1 < x0 + width) && (x2 < x0 + width)) {
 	            	it.goLeft();
 	            } else if ((x1 >= x0 + width) && (x2 >= x0 + width)) {
-	            	x0 += width;
+	            	x0 += height;
 	                it.goRight();
 	            } else {
 	            	return false;
